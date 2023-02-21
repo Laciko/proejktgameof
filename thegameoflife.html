@@ -1,0 +1,121 @@
+<html>
+  <!DOCTYPE html>
+  <html lang="hu">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Életjáték</title>
+  </head>
+  <body>
+
+    <Center><H1>DAVID ES LACKO PROJEKT
+      JS & HTML(Bera Mártonék rólunk másolták a sajátjukat)
+    </H1></Center>
+    <title>Életjáték</title>
+    <style>
+    .sejt { 
+        width: 10px;
+        height: 10px;
+        border: 10px;
+      }
+      .kitoltes {
+        background-color: darkblue;
+      }
+      .ures {
+        background-color: cornsilk;
+      }
+    </style>
+  </head>
+  <Center>
+  <body>
+    <table id="kitolt" style="border: 2px solid black"></table>
+    <script> //js
+      var meretek = 30;
+      var htmleselemek;
+      var sejt;
+      var ures = 0;
+      var mozgok = 1;
+
+      function kocka() { //kis kockak
+        htmleselemek = [];
+        sejt = [];
+        var table = document.getElementById('kitolt');
+        for (var y = 0; y < meretek; y++) {
+          var tr = document.createElement('tr');
+          var tdElements = [];
+          sejt.push(new Array(meretek).fill(ures));
+          htmleselemek.push(tdElements);
+          table.appendChild(tr);
+          for (var x = 0; x < meretek; x++) {
+            var td = document.createElement('td');
+            tdElements.push(td);
+            tr.appendChild(td);
+          }
+        }
+      }
+
+      function rajz() { //rajzolas (ez végül valamiért nem működik)
+        for (var y = 0; y < meretek; y++) {
+          for (var x = 0; x < meretek; x++) {
+            htmleselemek[y][x].setAttribute('class', 'sejt ' + (sejt[y][x] == 1 ? 'kitoltes' : 'ures'));
+          }
+        }
+      }
+
+      function oldalsoszomszedszamolo(x, y) {//szomszedszamolok
+        var count = 0;
+        for (dy = -1; dy <= 1; dy++) {
+          for (dx = -1; dx <= 1; dx++) {
+            var nx = (x + dx + meretek) % meretek, ny = (y + dy + meretek) % meretek; //méretezések
+            count = count + sejt[ny][nx];
+          }
+        }
+        return count - sejt[y][x];
+      }
+
+      function ujsejtek() { //az uj generaciok letrehozasa halal utan
+        var newsejt = [];
+        for (var i = 0; i < meretek; i++) {
+          newsejt.push(new Array(meretek).fill(ures));
+        }
+        for (var y = 1; y < meretek; y++) {
+          for (var x = 1; x < meretek; x++) {
+            var oldalsok = oldalsoszomszedszamolo(x, y);
+            if (sejt[y][x] == ures && oldalsok == 3) {
+              newsejt[y][x] = mozgok;
+            }
+            if (sejt[y][x] == mozgok && (oldalsok == 2 || oldalsok == 3)) {
+              newsejt[y][x] = mozgok;
+            }
+          }
+        }
+        sejt = newsejt;
+        rajz();
+      }
+
+      function init() { //p
+        kocka();
+        for (var i = 0; i < Math.floor(meretek * meretek * 0.10); i++) {
+          var x, y;
+          do {
+            x = Math.floor(Math.random() * meretek), y = Math.floor(Math.random() * meretek);
+            if (sejt[y][x] == ures) {
+              sejt[y][x] = mozgok;
+              break;
+            }
+          } while (true);
+        }
+        rajz();
+        setInterval(ujsejtek, 100);
+      }
+
+      init();
+    </script>
+    <footer>
+      <Center><h1>©COPYRIGHT</h1></Center>
+    </footer>
+  </body>
+</Center>
+</html>
